@@ -1,0 +1,161 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+    <changeSet id="2013-05-01_01" author="apodoba">
+        <createTable tableName="USER_ROLES">
+            <column name="ID" type="integer">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="NAME" type="varchar(50)">
+                <constraints nullable="false" unique="true" />
+            </column>
+            <column name="DESCRIPTION" type="varchar(1024)"></column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2013-05-01_02" author="apodoba">
+        <createSequence sequenceName="USERS_SEQ" startValue="1000" incrementBy="1" />
+    </changeSet>
+
+    <changeSet id="2013-05-01_03" author="snorochevskiy">
+        <createTable tableName="USERS">
+            <column name="ID" type="integer">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="EMAIL" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PASSWORD" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="FIRST_NAME" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="LAST_NAME" type="varchar(50)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="PHONE" type="varchar(15)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="USER_ROLE" type="varchar(50)">
+                <constraints nullable="false" foreignKeyName="FK_USER_ROLE" references="USER_ROLES(NAME)" />
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2013-05-01_04" author="apodoba">
+        <createSequence sequenceName="CATEGORIES_SEQ" startValue="1000" incrementBy="1" />
+    </changeSet>
+
+    <changeSet id="2013-05-01_05" author="apodoba">
+        <createTable tableName="CATEGORIES">
+            <column name="ID" type="integer">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="NAME" type="varchar(50)">
+                <constraints nullable="false" unique="true" />
+            </column>
+            <column name="DESCRIPTION" type="varchar(1024)"></column>
+	    <column name="PARENT_CATEGORY_ID" type="integer">
+                <constraints nullable="true" foreignKeyName="FK_PARENT_CATEGORY" references="CATEGORIES(ID)" />
+            </column>
+        </createTable>
+    </changeSet>
+  
+    <changeSet id="2013-05-01_06" author="apodoba">
+        <createSequence sequenceName="GOODS_SEQ" startValue="1000" incrementBy="1" />
+    </changeSet>
+
+   <changeSet id="2013-05-01_07" author="apodoba">
+        <createTable tableName="GOODS">
+            <column name="ID" type="integer">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="NAME" type="varchar(50)">
+                <constraints nullable="false" />
+            </column>
+	    <column name="PRICE" type="decimal(10,2)">
+                <constraints nullable="false" />
+            </column>
+            <column name="DESCRIPTION" type="varchar(1024)">
+    		<constraints nullable="false" />
+            </column>
+	    <column name="QUANTITY" type="integer">
+    		<constraints nullable="false" />
+            </column>	
+	    <column name="MANUFACTURER" type="varchar(50)">
+                <constraints nullable="false" />
+            </column>	
+	    <column name="CATEGORY_ID" type="integer">
+                <constraints nullable="false" foreignKeyName="FK_CATEGORY" references="CATEGORIES(ID)" />
+            </column>
+        </createTable>
+    </changeSet>
+   
+    <changeSet id="2013-05-01_08" author="apodoba">
+        <createSequence sequenceName="CART_SEQ" startValue="1000" incrementBy="1" />
+    </changeSet>
+
+    <changeSet id="2013-05-01_09" author="apodoba">
+        <createTable tableName="CART">
+            <column name="ID" type="integer">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="USER_ID" type="integer">
+                <constraints nullable="false" foreignKeyName="FK_USER" references="USERS(ID)" />
+            </column>
+	    <column name="GOODS_ID" type="integer">
+                <constraints nullable="false" foreignKeyName="FK_GOODS" references="GOODS(ID)" />
+            </column>
+	    <column name="QUANTITY" type="integer">
+    		<constraints nullable="false" />
+            </column>	
+	    <column name="ADDRESS" type="varchar(1024)">
+                <constraints nullable="false" />
+            </column>	
+	    <column name="DESCRIPTION" type="varchar(1024)"></column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2013-05-01_10" author="apodoba">
+        <createSequence sequenceName="COMMENTS_SEQ" startValue="1000" incrementBy="1" />
+    </changeSet>
+
+    <changeSet id="2013-05-01_11" author="apodoba">
+        <createTable tableName="COMMENTS">
+            <column name="ID" type="integer">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+	    <column name="GOODS_ID" type="integer">
+                <constraints nullable="false" foreignKeyName="FK_GOODS_COMMENT" references="GOODS(ID)" />
+            </column>
+	    <column name="USER_NAME" type="varchar(50)">
+                <constraints nullable="false" />
+            </column>	
+	    <column name="COMMENT_TEXT" type="varchar(2048)">
+		<constraints nullable="false" />
+	    </column>
+	    <column name="DATE_POSTED" type="date">
+		<constraints nullable="false" />
+	    </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2013-05-02_12" author="apodoba">
+        <createSequence sequenceName="IMAGES_SEQ" startValue="1000" incrementBy="1" />
+    </changeSet>
+
+    <changeSet id="2013-05-02_13" author="apodoba">
+        <createTable tableName="IMAGES">
+            <column name="ID" type="integer">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+	    <column name="IMAGE" type="blob"></column>
+	    <column name="GOODS_ID" type="integer">
+                <constraints nullable="false" foreignKeyName="FK_GOODS_IMAGE" references="GOODS(ID)" />
+            </column>
+        </createTable>
+    </changeSet>
+   
+</databaseChangeLog>

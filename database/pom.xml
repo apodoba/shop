@@ -1,0 +1,151 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <parent>
+        <groupId>com.apodoba</groupId>
+        <artifactId>shop</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>database</artifactId>
+    <packaging>jar</packaging>
+    <name>database</name>
+    <url>http://maven.apache.org</url>
+
+    <properties>
+        <rootDir>${project.basedir}/../</rootDir>
+    </properties>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>${project.basedir}/src/main/structure</directory>
+                <targetPath>structure</targetPath>
+                <filtering>false</filtering>
+            </resource>
+            <resource>
+                <directory>${project.basedir}/src/main/data</directory>
+                <targetPath>data</targetPath>
+                <includes>
+                    <include>**/*.xml</include>
+                </includes>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <plugins>
+
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>properties-maven-plugin</artifactId>
+                <version>1.0-alpha-2</version>
+                <configuration>
+                    <files>
+                        <file>${rootDir}/shop-db/src/main/resources/jdbc.properties</file>
+                    </files>
+                    <quiet>true</quiet>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>read-project-properties</id>
+                        <inherited>true</inherited>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>read-project-properties</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+
+            <plugin>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-maven-plugin</artifactId>
+                <version>2.0.5</version>
+                <configuration>
+                    <url>jdbc:derby:${jdbc.dbName};create=true</url>
+                    <driver>org.apache.derby.jdbc.EmbeddedDriver</driver>
+                    <promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
+                    <username>${jdbc.username}</username>
+                    <password>${jdbc.password}</password>
+                    <changeLogFile>${project.basedir}/src/main/structure/db-changelog.xml</changeLogFile>
+                    <skip>${skipDbChanges}</skip>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.derby</groupId>
+                        <artifactId>derby</artifactId>
+                        <version>${derby.version}</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <id>it</id>
+<!--                         <phase>validate</phase> -->
+<!--                         <goals> -->
+<!--                             <goal>update</goal> -->
+<!--                         </goals> -->
+                    </execution>
+                </executions>
+            </plugin>
+
+
+
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>sql-maven-plugin</artifactId>
+
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.derby</groupId>
+                        <artifactId>derby</artifactId>
+                        <version>${derby.version}</version>
+                    </dependency>
+                </dependencies>
+
+                <configuration>
+                <autocommit>true</autocommit>
+                    <driver>org.apache.derby.jdbc.EmbeddedDriver</driver>
+                    <url>jdbc:derby:${jdbc.dbName};create=false</url>
+                    <username>${jdbc.username}</username>
+                    <password>${jdbc.password}</password>
+                    <skip>${maven.test.skip}</skip>
+                </configuration>
+
+                <executions>
+                    <execution>
+                        <id>default-cli</id>
+<!--                         <phase>validate</phase> -->
+<!--                         <goals> -->
+<!--                         <goal>execute</goal> -->
+<!--                         </goals> -->
+                        <configuration>
+                            <autocommit>true</autocommit>
+                            <orderFile>ascending</orderFile>
+                            <fileset>
+                                <basedir>${basedir}/src/test/resources/sql</basedir>
+                                <includes>
+                                    <include>1-clear_tables.sql</include>
+                                    <include>2-user_roles.sql</include>
+                                    <include>3-users.sql</include>
+                                    <include>4-categories.sql</include>
+                                    <include>5-goods.sql</include>
+                                    <include>6-comments.sql</include>
+                                    <include>7-cart.sql</include>
+                                    <include>8-images.sql</include>
+                                </includes>
+                            </fileset>
+                        </configuration>
+                    </execution>
+
+                </executions>
+
+            </plugin>
+
+        </plugins>
+    </build>
+
+</project>
